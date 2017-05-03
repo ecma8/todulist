@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>toDolist</title>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+	<meta charset="UTF-8">
+</head>
+<body>
+<nav id="abc"></nav>
+</body>
+<script>
+	$.extend({
+		toDoList:function(option){
+			var title=option.title?option.title:'id,name';
+			var caozuo=option.caozuo?option.caozuo:'删除';
+			$.arr_1=[1,2,3,4,5];
+		}
+	});
+	$.toDoList({
+	})
+	var abc=document.getElementById('abc')
+	console.log(abc.tagName)
+	console.log($('#abc').get(0).tagName)
+</script>
+</html>
