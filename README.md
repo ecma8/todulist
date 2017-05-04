@@ -2,7 +2,6 @@
 
 toDuList 是基于 jQuery 列表添加删除插件。
 
-它灵活自由，你可以自定义外观，日期的范围，返回的格式等。
 
 **版本：**
 
@@ -15,8 +14,8 @@ toDuList 是基于 jQuery 列表添加删除插件。
 ### 载入 JavaScript 文件
 
 ```html
-<script src="jquery.js"></script>
-<script src="jquery.todulist.js"></script>
+<script src="js/jquery.js"></script>
+<script src="js/jquery.todulist.js"></script>
 ```
 
 ### DOM 结构
