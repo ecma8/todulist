@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>toDolist</title>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+	<meta charset="UTF-8">
+</head>
+<body>
+<!-- <select name="" id="button">
+	<option value="23">001</option>
+	<option value="24">002</option>
+	<option value="25">003</option>
+	<option value="26">004</option>
+	<option value="27">005</option>
+	<option value="28">006</option>
+	<option value="29">007</option>
+	<option value="30">008</option>
+	<option value="31">009</option>
+	<option value="32">010</option>
+
+</select> -->
+<input type="text" id='a' value="1">
+<input type="text" id='b' value="12">
+<input type="text" id='c' value="123">
+<img src="123.png" alt="" id="d">
+<input type="button" id="btn_abc" value="添加">
+
+<input type="button" class="_click" value="输出">
+<div class="table"></div>
+</body>
+<script>
+(function($){
+	$.fn.extend({
+		toDuList:function(option){
+			return this.each(function(){
+				var title=option.title?option.title:'';
+				var box=option.box?option.box:'';
+				var id=option.id?option.id:'';
+				var imgShow=option.imgShow?option.imgShow:false;
+				var data=option.data?option.data:[];
+				var attrArr=option.attrArr?option.attrArr:'array';
+				var add=option.add;
+				var del=option.del;
+				var success=option.success;
+				var table=$('<table></table>');
+				var thead=$('<tr></tr>');
+				var tagName=$(this).get(0).tagName.toLowerCase();
+				var event=(tagName=='input')?'click':'change';
+				var caozuo=option.caozuo?option.caozuo:'删除';
+				var title_arr=title.split(',');
+				var id_arr=id;
+				var that=$(this);
+				var _arr=[];
+				var del=that.selector.replace(/\#/,'')+'_del';
+				var set=that.selector.replace(/\#/,'')+'_set';
+				var id=that.selector.replace(/\#/,'')+'_id';
+				for(var i=0;i<title_arr.length;i++)
+				{
+					var td=$('<th>'+title_arr[i]+'</th>');
+					thead.append(td);
+				}
+				thead.append($('<th>操作</th>'));
+				table.append(thead);
+				box.append(table);
+				var _num=0;
+				function getData(obj){
+					var arr=obj.split(',');
+					var arr_1=[];
+					var arr_2=[];
+					$.each(arr,function(index,item){
+						if($(item).get(0).tagName.toLowerCase()=='img')
+						{
+							if(imgShow)
+							{
+								arr_2.push(index);
+							}
+							else{
+
+							}
+							arr_1.push($(item).attr('src'));
+						}
+						else{
+							arr_1.push($(item).val());
+						}
+					})
+					if(!imgShow){
+						arr_2=arr_1;
+						return arr_2;
+					}else{
+						arr_2.push(arr_1);
+						return arr_2;
+					}
+					
+				}
+				function showData(num,obj,caozuo){
+					add(obj);
+					var tr=$('<tr></tr>');
+					tr.append('<td class='+id+'>'+num+'</td>')
+					//console.log(obj);
+					if(imgShow)
+					{
+						for(var i=0;i<obj.length;i++)
+						{
+							if(i==obj[0])
+							{
+								tr.append('<td><img src='+obj[1][obj[0]]+'></td>')
+							}else{
+								tr.append('<td>'+obj[1][i]+'</td>')
+							}
+						}
+					}
+					else{
+						for(var i=0;i<obj.length;i++)
+						{
+							tr.append($('<td>'+obj[i]+'</td>'))
+						}
+					}
+					if(caozuo=='删除')
+					{
+						tr.append('<td><a href=javascript:; class='+del+'>删除</a></td>')
+					}
+					else{
+						var td=$('<td></td>');
+						var caozuo=caozuo.split(',');
+						$.each(caozuo,function(index,item){
+							if(index==0)
+							{
+								td.append($('<a href=javascript:; class='+del+'>'+item+'</a>'))
+							}
+							else if(index==1)
+							{
+								td.append($('<a href=javascript:; class='+set+'>'+item+'</a>'))
+							}else{
+								return false;
+							}
+						})
+						tr.append(td);
+					}
+					table.append(tr)
+				}
+				$(this).on(event,function(){
+					if(tagName=='input')
+					{
+						_num++;
+						var input_arr=[];
+						var data_num=that.attr('data-index');
+						if(that.val()=='保存当前选项')
+						{
+							that.val('添加');
+							$.each(id_arr.split(','),function(xx,item){
+								if($(item).get(0).tagName.toLowerCase()=='img')
+								{
+									_arr[data_num][xx]=$(item).attr('src');
+								}
+								else{
+									_arr[data_num][xx]=$(item).val();
+									
+								}
+							})
+							$(this).attr(attrArr,_arr)
+						}
+						else{
+							showData(_num,getData(id_arr),caozuo)
+							_arr.push(getData(id_arr))
+							$(this).attr(attrArr,_arr)
+							$(this).attr('data-index',id_arr.length)
+						}
+					}
+				});
+				box.on('click','.'+del,function(){
+					var index=$('.'+del).index(this);
+					_num--;
+					$('.'+del).parent().parent().parent().find('tr').eq(index+1).remove();
+					_arr.splice(index,1);
+					that.attr(attrArr,_arr)
+					for(var i=0;i<$('.'+del).size();i++)
+					{
+						$('.'+id).eq(i).text(i+1);
+					}
+				})
+				box.on('click','.'+set,function(){
+					var index=$('.'+set).index(this);
+					that.val('保存当前选项');
+					that.attr('data-index',index);
+					$.each(id_arr.split(','),function(xx,item){
+						if($(item).get(0).tagName.toLowerCase()=='img')
+						{
+							console.log(_arr[index][xx]);
+							$(item).attr('src',_arr[index][xx]);
+						}
+						else{
+							$(item).val(_arr[index][xx]);
+						}
+					})
+				})
+				success(_arr)
+			})
+		}
+	});
+
+})(jQuery)	
+	var data=[{id:'123',name:'456'},{id:'123',name:'456'},{id:'123',name:'456'},{id:'123',name:'456'}]
+	$('#btn_abc').toDuList({
+		box:$('.table'),
+		attrArr:'array',
+		title:'id,name,name1,name2,img',
+		id:'#a,#b,#c,#d',
+		caozuo:'删除,编辑',
+		data:data,
+		add:function(data){
+		},
+		del:function(data){
+			console.log('删除成功');
+		},
+		success:function(data){
+			$('._click').click(function(){
+				console.log(data);
+			})
+		}
+	})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// function shuchu(obj){
+	// 	var arr=obj.attr('array').split(',');
+	// 	var num=obj.attr('data-num').split(',');
+	// 	var arr_2=[];
+	// 	for(var i=0;i<num;i++)
+	// 	{
+	// 		arr_2.push(arr.splice(0,3))
+	// 		console.log(arr_2);
+	// 	}
+	// 	return arr_2;
+	// }
+	// $('.click').click(function(){
+	// 	console.log(shuchu($('#click')));
+	// })	
+	// function xxx(obj){
+	// 	var arr=obj.split(',');
+	// 	var arr_1=[];
+	// 	$.each(arr,function(index,item){
+	// 		if($(item).get(0).tagName.toLowerCase()=='img')
+	// 		{
+	// 			arr_1.push($(item).attr('src'))
+	// 		}
+	// 		else{
+	// 			arr_1.push($(item).val())
+	// 		}
+	// 	})
+	// 	console.log(arr_1);
+	// }
+	// function getData(obj){
+	// 	var arr=obj.split(',');
+	// 	var arr_1=[];
+	// 	var arr_2=[];
+	// 	$.each(arr,function(index,item){
+	// 		if($(item).get(0).tagName.toLowerCase()=='img')
+	// 		{
+	// 			arr_2.push(index);
+	// 			arr_1.push($(item).attr('src'));
+	// 		}
+	// 		else{
+	// 			arr_1.push($(item).val());
+	// 		}
+	// 	})
+	// 	arr_2.push(arr_1);
+	// 	return arr_2;
+	// }
+	//  console.log(getData('#a,#b,#c,#d'));
+</script>
+</html>
