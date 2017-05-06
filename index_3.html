@@ -26,6 +26,8 @@
 <input type="button" id="btn_abc" value="添加">
 
 <input type="button" class="_click" value="输出">
+<input type="button" class="_ceshi" value="测试">
+<input type="button" class="_ceshiout" value="测试输出">
 <div class="table"></div>
 </body>
 <script>
@@ -206,7 +208,7 @@
 		title:'id,name,name1,name2,img',
 		id:'#a,#b,#c,#d',
 		caozuo:'删除,编辑',
-		data:data,
+		// data:data,
 		add:function(data){
 		},
 		del:function(data){
@@ -218,6 +220,21 @@
 			})
 		}
 	})
+
+	var person={
+		name:123,
+		success:function(data){
+			$('._ceshiout').click(function(){
+				console.log(data);
+			})
+		}
+	}
+	var abc=123;
+	$('._ceshi').click(function(){
+		abc++;
+		console.log(abc)
+	})
+	person.success(abc);
 
 
 
