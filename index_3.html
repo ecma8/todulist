@@ -22,14 +22,33 @@
 <input type="text" id='a' value="1">
 <input type="text" id='b' value="12">
 <input type="text" id='c' value="123">
+<!-- <input type="text" id='d' value="123"> -->
 <img src="123.png" alt="" id="d">
 <input type="button" id="btn_abc" value="添加">
 
 <input type="button" class="_click" value="输出">
-<input type="button" class="_ceshi" value="测试">
-<input type="button" class="_ceshiout" value="测试输出">
+<input type="button" class="add" value="测试">
+<input type="button" class="out" value="测试输出">
 <div class="table"></div>
 </body>
+<script>
+	var person={
+		name:123,
+		success:function(data){
+			$('.out').click(function(){
+				console.log('out输出的数组'+data);
+			})
+		}
+	}
+	var num=0;
+	var arr=[0];
+	$('.add').click(function(){
+		num++;
+		arr.push(num)
+		console.log('add输出的数组'+num)
+	})
+	person.success(arr);
+</script>
 <script>
 (function($){
 	$.fn.extend({
@@ -41,13 +60,13 @@
 				var imgShow=option.imgShow?option.imgShow:false;
 				var data=option.data?option.data:[];
 				var attrArr=option.attrArr?option.attrArr:'array';
-				var add=option.add;
-				var del=option.del;
+				var _add=option.add;
+				var _del=option.del;
+				var _set=option.set;
 				var success=option.success;
 				var table=$('<table></table>');
 				var thead=$('<tr></tr>');
-				var tagName=$(this).get(0).tagName.toLowerCase();
-				var event=(tagName=='input')?'click':'change';
+				var event='click';
 				var caozuo=option.caozuo?option.caozuo:'删除';
 				var title_arr=title.split(',');
 				var id_arr=id;
@@ -61,6 +80,7 @@
 					var td=$('<th>'+title_arr[i]+'</th>');
 					thead.append(td);
 				}
+				console.log(option);
 				thead.append($('<th>操作</th>'));
 				table.append(thead);
 				box.append(table);
@@ -95,13 +115,13 @@
 					
 				}
 				function showData(num,obj,caozuo){
-					add(obj);
+					_add(obj);
 					var tr=$('<tr></tr>');
 					tr.append('<td class='+id+'>'+num+'</td>')
 					//console.log(obj);
 					if(imgShow)
 					{
-						for(var i=0;i<obj.length;i++)
+						for(var i=0;i<obj[1].length;i++)
 						{
 							if(i==obj[0])
 							{
@@ -141,32 +161,36 @@
 					table.append(tr)
 				}
 				$(this).on(event,function(){
-					if(tagName=='input')
+					_num++;
+					var data_num=parseInt(that.attr('data-index'));
+					if(that.val()=='保存当前选项')
 					{
-						_num++;
-						var input_arr=[];
-						var data_num=that.attr('data-index');
-						if(that.val()=='保存当前选项')
-						{
-							that.val('添加');
-							$.each(id_arr.split(','),function(xx,item){
-								if($(item).get(0).tagName.toLowerCase()=='img')
+						that.val('添加');
+						$.each(id_arr.split(','),function(xx,item){
+							if($(item).get(0).tagName.toLowerCase()=='img')
+							{
+								_arr[data_num][0]=xx;
+								_arr[data_num][1][xx]=$(item).attr('src');
+								if(imgShow)
 								{
-									_arr[data_num][xx]=$(item).attr('src');
+
+									box.find('tr').eq(data_num+1).find('td').eq(xx+1).find('img').attr('src',$(item).attr('src'))
 								}
 								else{
-									_arr[data_num][xx]=$(item).val();
-									
+									box.find('tr').eq(data_num+1).find('td').eq(xx+1).text($(item).attr('src'))
 								}
-							})
-							$(this).attr(attrArr,_arr)
-						}
-						else{
-							showData(_num,getData(id_arr),caozuo)
-							_arr.push(getData(id_arr))
-							$(this).attr(attrArr,_arr)
-							$(this).attr('data-index',id_arr.length)
-						}
+							}
+							else{
+								_arr[data_num][1][xx]=$(item).val();
+								box.find('tr').eq(data_num+1).find('td').eq(xx+1).text($(item).val())
+							}
+						})
+					}
+					else{
+						showData(_num,getData(id_arr),caozuo)
+						_arr.push(getData(id_arr))
+						//console.log(_arr);
+						$(this).attr('data-index',id_arr.length)
 					}
 				});
 				box.on('click','.'+del,function(){
@@ -179,21 +203,37 @@
 					{
 						$('.'+id).eq(i).text(i+1);
 					}
+					_del(index);
 				})
 				box.on('click','.'+set,function(){
 					var index=$('.'+set).index(this);
 					that.val('保存当前选项');
 					that.attr('data-index',index);
-					$.each(id_arr.split(','),function(xx,item){
-						if($(item).get(0).tagName.toLowerCase()=='img')
-						{
-							console.log(_arr[index][xx]);
-							$(item).attr('src',_arr[index][xx]);
-						}
-						else{
-							$(item).val(_arr[index][xx]);
-						}
-					})
+					if(imgShow)
+					{
+						$.each(id_arr.split(','),function(xx,item){
+							if($(item).get(0).tagName.toLowerCase()=='img')
+							{
+								$(item).attr('src',_arr[index][1][_arr[0]]);
+							}
+							else{
+								// console.log(_arr[1][index]);
+								$(item).val(_arr[index][1][xx]);
+							}
+						})
+					}
+					else{
+						$.each(id_arr.split(','),function(xx,item){
+							if($(item).get(0).tagName.toLowerCase()=='img')
+							{
+								$(item).attr('src',_arr[index][xx]);
+							}
+							else{
+								// console.log(_arr[1][index]);
+								$(item).val(_arr[index][xx]);
+							}
+						})
+					}
 				})
 				success(_arr)
 			})
@@ -208,11 +248,16 @@
 		title:'id,name,name1,name2,img',
 		id:'#a,#b,#c,#d',
 		caozuo:'删除,编辑',
+		imgShow:true,
 		// data:data,
 		add:function(data){
+			console.log(data);
 		},
 		del:function(data){
-			console.log('删除成功');
+			//console.log(data);
+		},
+		set:function(data){
+			//console.log(data);
 		},
 		success:function(data){
 			$('._click').click(function(){
@@ -220,21 +265,7 @@
 			})
 		}
 	})
-
-	var person={
-		name:123,
-		success:function(data){
-			$('._ceshiout').click(function(){
-				console.log(data);
-			})
-		}
-	}
-	var abc=123;
-	$('._ceshi').click(function(){
-		abc++;
-		console.log(abc)
-	})
-	person.success(abc);
+	
 
 
 
